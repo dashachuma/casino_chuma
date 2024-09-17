@@ -3,22 +3,18 @@
 {% block title %}Добро пожаловать на страницу карточной игры{% endblock %}
 
 {% block content %}
-<body class="d-flex flex-column h-100 text-bg-dark">
+<body class="d-flex flex-row h-100 text-bg-dark">
 
-   
-    <div style="position: fixed; top: 20px; left: 20px;">
-        
+    <div style="position: fixed; top: 50px; left: 50px;">
         <button onclick="window.location.href='/generate_deck'" class="btn btn-danger rounded-pill px-3 mb-4" type="button">Вытянуть карты</button>
 
         {% if cards %}
-            
             <div id="cards" class="d-flex flex-row mb-4" style="gap: 10px;">
                 {% for card in cards %}
                     <img src="{{ card.image }}" alt="{{ card.value }} of {{ card.suit }}" style="max-width: 150px;">
                 {% endfor %}
             </div>
 
-            
             <div id="points" class="mb-4">
                 {% if points is defined %}
                     <p>Ваши баллы: {{ points }}</p>
@@ -26,15 +22,36 @@
             </div>
 
             
+            {% if cards_dealer %}
+                <div style="position: fixed; top: 77px; right: 550px;">
+                    <div id="dealer-cards-info">
+                        <p>Карты дилера</p>
+                        <div id="dealer-cards" class="d-flex flex-row mb-4" style="gap: 10px;">
+                            {% for card in cards_dealer %}
+                                <img src="{{ card.image }}" alt="{{ card.value }} of {{ card.suit }}" style="max-width: 150px;">
+                            {% endfor %}
+                        </div>
+                        <div id="dealer-points" class="mb-4">
+                            {% if points_dealer is defined %}
+                                <p>Очки дилера: {{ points_dealer }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            
             <form action="/draw_card" method="post" style="margin-bottom: 20px;">
                 <button type="submit" class="btn btn-danger rounded-pill px-3" type="button">Вытянуть еще одну карту</button>
             </form>
 
-            
+            <form action="{{ url_for('dealer') }}" method="get" style="margin-bottom: 20px;"> 
+                <button type="submit" class="btn btn-danger rounded-pill px-3" type="button">Передать ход</button>
+            </form>
+
             <button onclick="window.location.href='/reset_game'" class="btn btn-danger rounded-pill px-3" type="button">Сбросить игру</button>
         {% endif %}
-	
-    </div>
+    </div>  
 
 </body>
 {% endblock %}
