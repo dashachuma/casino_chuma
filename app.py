@@ -27,21 +27,6 @@ def generate_deck():
     points = calculate_points(cards)
     return render_template('new_page.html', cards=cards, points=points, deck_id=deck_id)
 
-@app.route('/stop_cards', methods=['POST'])
-def stop_cards():
-    deck_id = session.get('deck_id')
-    
-	dealer_cards = session.get('dealer_cards', [])
-
-    draw_dealer = requests.get(f'https://deckofcardsapi.com/api/deck/{deck_id}/draw/?count=1')
-    new_card = draw_dealer.json().get('cards', [])
-    dealer_cards.append(new_card[0])
-
-    session['dealer_cards'] = dealer_cards  
-
-    
-    return render_template('new_page.html', card=cards, dealer_cards=dealer_cards, deck_id=deck_id)
-
 @app.route('/reset_game', methods=['GET'])
 def reset_game():
     session.pop('deck_id', None) 
