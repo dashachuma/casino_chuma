@@ -81,3 +81,8 @@ def new_page():
 
 if __name__ == '__main__':
     app.run(debug=True)
+<<<<<<< HEAD
+=======
+
+#test
+>>>>>>> 8447cbaeb13d59d61f42c4db98356f9dfeba55cd
