@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Your Page Title{% endblock %}
+
+{% block content %}
+
+<body class="d-flex flex-column h-100 text-center text-bg-dark">
+    <div class="d-flex flex-column justify-content-center align-items-center vh-100 w-100" style="margin-top: -10vh;">
+
+        
+        <img src="{{ url_for('static', filename='img/cardslogo.png') }}" alt="Cards Logo" class="img-fluid mb-4" style="width: 25%; max-width: 50%;">
+
+        
+        <main class="px-3">
+            <h1 class="mb-4">Online BlackJack</h1>
+        </main>
+
+        
+        <a href="{{ url_for('new_page') }}" class="btn rounded-pill px-3" style="background-color: #c21924; color: white;">Начать игру</a>
+
+    </div>
+</body>
+{% endblock %}
