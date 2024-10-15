@@ -1,23 +1,60 @@
 {% extends "base.html" %}
 
-{% block title %}Your Page Title{% endblock %}
+{% block title %}Online BlackJack{% endblock %}
 
 {% block content %}
+<div class="d-flex flex-column min-vh-100 text-center text-bg-dark"> 
+    <div class="d-flex flex-column justify-content-center align-items-center vh-100 w-100">
 
-<body class="d-flex flex-column h-100 text-center text-bg-dark">
-    <div class="d-flex flex-column justify-content-center align-items-center vh-100 w-100" style="margin-top: -10vh;">
+        <div class="logo-container mb-4">
+            <img src="{{ url_for('static', filename='img/cardslogo.png') }}" alt="Cards Logo" class="img-fluid" style="width: 25%; max-width: 50%;">
+        </div>
 
-        
-        <img src="{{ url_for('static', filename='img/cardslogo.png') }}" alt="Cards Logo" class="img-fluid mb-4" style="width: 25%; max-width: 50%;">
-
-        
         <main class="px-3">
-            <h1 class="mb-4">Online BlackJack</h1>
+            <h1 class="mb-4">Онлайн Блэкджек</h1>  <!-- Заголовок игры -->
         </main>
 
-        
-        <a href="{{ url_for('new_page') }}" class="btn rounded-pill px-3" style="background-color: #c21924; color: white;">Начать игру</a>
+        <div class="player-info mt-4"> <!-- Добавлен отступ сверху для улучшения визуала -->
+            {% if player_name %}
+                <p class="mb-4">Привет, {{ player_name }}!</p>  
+                <h3>Баланс: ${{ balance }}</h3>  
 
+                <div class="start-game-container mt-3"> <!-- Обертка для кнопки начала игры -->
+                    <form action="{{ url_for('new_page') }}" method="GET">  
+                        <button type="submit" class="btn rounded-pill px-3" style="background-color: #c21924; color: white;">Начать игру</button>  
+                    </form>
+                </div>
+
+                <div class="name-change-container mt-3"> <!-- Обертка для смены имени -->
+                    <form action="{{ url_for('set_name') }}" method="POST" style="width: 300px;">  
+                        <div class="mb-3">
+                            <label for="player_name" class="form-label">Сменить имя игрока:</label>  
+                            <input type="text" id="player_name" name="player_name" class="form-control" placeholder="Введите новое имя" required>  
+                        </div>
+                        <button type="submit" class="btn btn-secondary">Сменить имя</button>  
+                    </form>
+                </div>
+            {% else %}
+                <div class="existing-player-selection mt-3"> <!-- Обертка для выбора существующего игрока -->
+                    <form action="{{ url_for('index') }}" method="POST" style="width: 300px;">  
+                        <div class="mb-3">
+                            <label for="existing_player" class="form-label">Выберите игрока:</label>
+                            <select id="existing_player" name="existing_player" class="form-select">
+                                <option value="">-- Выберите игрока --</option>
+                                {% for player in players %}
+                                    <option value="{{ player.username }}">{{ player.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_player_name" class="form-label">Или создайте нового игрока:</label>  
+                            <input type="text" id="new_player_name" name="new_player_name" class="form-control" placeholder="Введите имя нового игрока">  
+                        </div>
+                        <button type="submit" class="btn rounded-pill px-3" style="background-color: #28a745; color: white;">Создать или выбрать игрока</button>  
+                    </form>
+                </div>
+            {% endif %}
+        </div>
     </div>
-</body>
+</div>
 {% endblock %}

@@ -4,9 +4,33 @@
 
 {% block content %}
 <body class="d-flex flex-row h-100 text-bg-dark">
+    <div style="position: fixed; top: 20px; left: 50px; width: calc(100% - 100px); z-index: 1000;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 style="color: white;">Привет, {{ player_name }}!</h2>
+            <div>
+                <h3 style="color: white;">Баланс: ${{ balance }}</h3>
+                {% if current_bet %}
+                    <h4 style="color: white;">Ставка: ${{ current_bet }}</h4>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
-    <div style="position: fixed; top: 50px; left: 50px;">
-        <button onclick="window.location.href='/generate_deck'" class="btn btn-danger rounded-pill px-3 mb-4" type="button">Вытянуть карты</button>
+    <div style="position: fixed; top: 80px; left: 50px;">
+        {% if not cards and not cards_dealer %}
+            <form action="{{ url_for('generate_deck') }}" method="POST" style="margin-bottom: 20px;">
+                <div class="mb-3">
+                    <label for="bet" class="form-label" style="color: white;">Выберите ставку:</label>
+                    <select id="bet" name="bet" class="form-select" required>
+                        <option value="2">$2</option>
+                        <option value="5">$5</option>
+                        <option value="10">$10</option>
+                        <option value="all_in">All In (${{ balance }})</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-danger rounded-pill px-3">Начать игру</button>
+            </form>
+        {% endif %}
 
         {% if cards %}
             <div id="cards" class="d-flex flex-row mb-4" style="gap: 10px;">
@@ -17,15 +41,14 @@
 
             <div id="points" class="mb-4">
                 {% if points is defined %}
-                    <p>Ваши баллы: {{ points }}</p>
+                    <p style="color: white;">Ваши баллы: {{ points }}</p>
                 {% endif %}
             </div>
 
-            
             {% if cards_dealer %}
-                <div style="position: fixed; top: 77px; right: 550px;">
+                <div style="position: fixed; top: 77px; right: 50px;">
                     <div id="dealer-cards-info">
-                        <p>Карты дилера</p>
+                        <p style="color: white;">Карты дилера</p>
                         <div id="dealer-cards" class="d-flex flex-row mb-4" style="gap: 10px;">
                             {% for card in cards_dealer %}
                                 <img src="{{ card.image }}" alt="{{ card.value }} of {{ card.suit }}" style="max-width: 150px;">
@@ -33,25 +56,43 @@
                         </div>
                         <div id="dealer-points" class="mb-4">
                             {% if points_dealer is defined %}
-                                <p>Очки дилера: {{ points_dealer }}</p>
+                                <p style="color: white;">Очки дилера: {{ points_dealer }}</p>
                             {% endif %}
                         </div>
                     </div>
                 </div>
             {% endif %}
 
-            
-            <form action="/draw_card" method="post" style="margin-bottom: 20px;">
-                <button type="submit" class="btn btn-danger rounded-pill px-3" type="button">Вытянуть еще одну карту</button>
+            <form action="{{ url_for('draw_card') }}" method="post" style="margin-bottom: 20px;">
+                <button type="submit" class="btn btn-danger rounded-pill px-3">Вытянуть еще одну карту</button>
             </form>
 
             <form action="{{ url_for('dealer') }}" method="get" style="margin-bottom: 20px;"> 
-                <button type="submit" class="btn btn-danger rounded-pill px-3" type="button">Передать ход</button>
+                <button type="submit" class="btn btn-danger rounded-pill px-3">Передать ход</button>
             </form>
 
-            <button onclick="window.location.href='/reset_game'" class="btn btn-danger rounded-pill px-3" type="button">Сбросить игру</button>
+            <a href="{{ url_for('final_page') }}" class="btn btn-warning rounded-pill px-3" style="background-color: #ffc107; color: black; margin-right: 10px;">Закончить игру</a>
+
+            <button onclick="window.location.href='{{ url_for('reset_game') }}'" class="btn btn-danger rounded-pill px-3" type="button">Сыграть еще раз</button>
         {% endif %}
     </div>  
 
+    {% if result %}
+        <div class="position-fixed bottom-0 start-50 translate-middle-x mb-4" style="width: 100%;">
+            {% if result == 'win' %}
+                <div class="alert alert-success" role="alert">
+                    Поздравляем! Вы выиграли ${{ current_bet * 2 }}!
+                </div>
+            {% elif result == 'loss' %}
+                <div class="alert alert-danger" role="alert">
+                    К сожалению, вы проиграли ${{ current_bet }}.
+                </div>
+            {% elif result == 'draw' %}
+                <div class="alert alert-warning" role="alert">
+                    Ничья! Ваша ставка ${{ current_bet }} возвращена.
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
 </body>
 {% endblock %}
