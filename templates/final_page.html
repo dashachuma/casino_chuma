@@ -39,7 +39,7 @@
                             </td>
                             <td>{{ game.player_points }}</td>
                             <td>{{ game.dealer_points }}</td>
-                            <td>{{ "%.2f" | format(game.balance_after_game) }}</td>
+                            <td>{{ "%.2f" | format(game.balance_after_game | int) }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

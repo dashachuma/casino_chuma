@@ -27,7 +27,7 @@ def index():
         if player_name:
             player = Player.query.filter_by(username=player_name).first()
             if not player and request.form.get('new_player_name'):
-                player = Player(username=player_name, balance=20.0)
+                player = Player(username=player_name, balance=20)
                 db.session.add(player)
                 db.session.commit()
 
@@ -59,7 +59,7 @@ def retrieve_balance(player_name):
 def set_name():
     player_name = request.form.get('player_name')
     if player_name:
-        player = Player.query.filter_by(username=player_name).first() or Player(username=player_name, balance=20.0)
+        player = Player.query.filter_by(username=player_name).first() or Player(username=player_name, balance=20)
         if not player.id:
             db.session.add(player)
             db.session.commit()

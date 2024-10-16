@@ -11,50 +11,37 @@
         </div>
 
         <main class="px-3">
-            <h1 class="mb-4">Онлайн Блэкджек</h1>  <!-- Заголовок игры -->
+            <h1 class="mb-4" >Online BLACKJACK</h1>  
         </main>
 
-        <div class="player-info mt-4"> <!-- Добавлен отступ сверху для улучшения визуала -->
-            {% if player_name %}
-                <p class="mb-4">Привет, {{ player_name }}!</p>  
-                <h3>Баланс: ${{ balance }}</h3>  
+        <div class="player-info mt-4"> <!-- Общий див -->
+    {% if player_name %}
+        
+        <div class="player-details border border-white p-1 rounded "> <!-- див для первого блока -->
+            <h3 class="mb-1 mt-3">Привет, <span class="text-danger fw-bold">{{ player_name }}</span>!</h3>  
+            <h3>Твой баланс: ${{ balance |int }}</h3>  
 
-                <div class="start-game-container mt-3"> <!-- Обертка для кнопки начала игры -->
-                    <form action="{{ url_for('new_page') }}" method="GET">  
-                        <button type="submit" class="btn rounded-pill px-3" style="background-color: #c21924; color: white;">Начать игру</button>  
-                    </form>
-                </div>
+            <div class="start-game-container mt-3"> <!-- див для кнопки начала игры -->
+                <form action="{{ url_for('new_page') }}" method="GET">  
+                    <button type="submit" class="btn btn-danger rounded-pill px-3 mb-3">Начать игру</button>  
+                </form>
+            </div>
+        </div> 
 
-                <div class="name-change-container mt-3"> <!-- Обертка для смены имени -->
-                    <form action="{{ url_for('set_name') }}" method="POST" style="width: 300px;">  
-                        <div class="mb-3">
-                            <label for="player_name" class="form-label">Сменить имя игрока:</label>  
-                            <input type="text" id="player_name" name="player_name" class="form-control" placeholder="Введите новое имя" required>  
-                        </div>
-                        <button type="submit" class="btn btn-secondary">Сменить имя</button>  
-                    </form>
+       
+        <div class="name-change-container mt-5"> <!-- див для смены имени -->
+            <form action="{{ url_for('set_name') }}" method="POST" style="width: 300px;">  
+                <div class="mb-3">
+                    <label for="player_name" class="form-label">Сменить имя игрока:</label>  
+                    <input type="text" id="player_name" name="player_name" class="form-control rounded-pill px-3" placeholder="Введите новое имя" required>  
                 </div>
-            {% else %}
-                <div class="existing-player-selection mt-3"> <!-- Обертка для выбора существующего игрока -->
-                    <form action="{{ url_for('index') }}" method="POST" style="width: 300px;">  
-                        <div class="mb-3">
-                            <label for="existing_player" class="form-label">Выберите игрока:</label>
-                            <select id="existing_player" name="existing_player" class="form-select">
-                                <option value="">-- Выберите игрока --</option>
-                                {% for player in players %}
-                                    <option value="{{ player.username }}">{{ player.username }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="new_player_name" class="form-label">Или создайте нового игрока:</label>  
-                            <input type="text" id="new_player_name" name="new_player_name" class="form-control" placeholder="Введите имя нового игрока">  
-                        </div>
-                        <button type="submit" class="btn rounded-pill px-3" style="background-color: #28a745; color: white;">Создать или выбрать игрока</button>  
-                    </form>
-                </div>
-            {% endif %}
+                <button type="submit" class="btn btn-secondary rounded-pill px-3">Сменить имя</button>  
+            </form>
         </div>
+    {% else %}
+        
+    {% endif %}
+</div>
     </div>
 </div>
 {% endblock %}

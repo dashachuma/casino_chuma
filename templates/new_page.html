@@ -5,10 +5,12 @@
 {% block content %}
 <body class="d-flex flex-row h-100 text-bg-dark">
     <div style="position: fixed; top: 20px; left: 50px; width: calc(100% - 100px); z-index: 1000;">
+	
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 style="color: white;">Привет, {{ player_name }}!</h2>
+			<p style="color: white;">Карты игрока</p>
             <div>
-                <h3 style="color: white;">Баланс: ${{ balance }}</h3>
+                <h3 style="color: white;">Баланс: ${{ balance |int }}</h3>
                 {% if current_bet %}
                     <h4 style="color: white;">Ставка: ${{ current_bet }}</h4>
                 {% endif %}
