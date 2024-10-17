@@ -1,100 +1,130 @@
 {% extends "base.html" %}
 
-{% block title %}Добро пожаловать на страницу карточной игры{% endblock %}
+{% block title %}Карточная Игра{% endblock %}
 
 {% block content %}
-<body class="d-flex flex-row h-100 text-bg-dark">
-    <div style="position: fixed; top: 20px; left: 50px; width: calc(100% - 100px); z-index: 1000;">
-	
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 style="color: white;">Привет, {{ player_name }}!</h2>
-			<p style="color: white;">Карты игрока</p>
+<div class="container-fluid bg-dark text-white min-vh-100 d-flex flex-column">
+
+    <!-- типа шапка -->
+    <div class="py-3 border-bottom">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h2>Привет, {{ player_name }}!</h2>
             <div>
-                <h3 style="color: white;">Баланс: ${{ balance |int }}</h3>
+                <h3>Баланс: ${{ balance | int }}</h3>
                 {% if current_bet %}
-                    <h4 style="color: white;">Ставка: ${{ current_bet }}</h4>
+                    <h4>Ставка: ${{ current_bet }}</h4>
                 {% endif %}
             </div>
         </div>
     </div>
 
-    <div style="position: fixed; top: 80px; left: 50px;">
-        {% if not cards and not cards_dealer %}
-            <form action="{{ url_for('generate_deck') }}" method="POST" style="margin-bottom: 20px;">
-                <div class="mb-3">
-                    <label for="bet" class="form-label" style="color: white;">Выберите ставку:</label>
-                    <select id="bet" name="bet" class="form-select" required>
-                        <option value="2">$2</option>
-                        <option value="5">$5</option>
-                        <option value="10">$10</option>
-                        <option value="all_in">All In (${{ balance }})</option>
-                    </select>
+    <!-- Основной Контент -->
+    <div class="flex-grow-1 container my-4">
+
+        <!-- Форма ставки и кнопка начала игры -->
+        {% if not cards and not cards_dealer and not result %}
+            <div class="row justify-content-center mb-4">
+                <div class="col-md-6">
+                    <form action="{{ url_for('generate_deck') }}" method="POST" class="d-flex flex-column align-items-center">
+                        <div class="mb-3 w-100">
+                            <label for="bet" class="form-label">Выберите ставку:</label>
+                            <select id="bet" name="bet" class="form-select" required>
+                                <option value="2">$2</option>
+                                <option value="5">$5</option>
+                                <option value="10">$10</option>
+                                <option value="all_in">All In (${{ balance }})</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-danger rounded-pill px-4">Начать игру</button>
+                    </form>
                 </div>
-                <button type="submit" class="btn btn-danger rounded-pill px-3">Начать игру</button>
-            </form>
+            </div>
         {% endif %}
 
-        {% if cards %}
-            <div id="cards" class="d-flex flex-row mb-4" style="gap: 10px;">
-                {% for card in cards %}
-                    <img src="{{ card.image }}" alt="{{ card.value }} of {{ card.suit }}" style="max-width: 150px;">
-                {% endfor %}
-            </div>
+        <!-- Игровая Зона -->
+        {% if cards or dealer_acted %}
+            <div class="row">
 
-            <div id="points" class="mb-4">
-                {% if points is defined %}
-                    <p style="color: white;">Ваши баллы: {{ points }}</p>
-                {% endif %}
-            </div>
+                <!-- Карты Игрока -->
+                <div class="col-md-6 mb-4">
+                    <h4>Ваши карты:</h4>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for card in cards %}
+                            <img src="{{ card.image }}" alt="{{ card.value }} of {{ card.suit }}" class="img-fluid" style="max-width: 100px;">
+                        {% endfor %}
+                    </div>
+                    {% if points is defined %}
+                        <p class="mt-2">Ваши баллы: {{ points }}</p>
+                    {% endif %}
+                </div>
 
-            {% if cards_dealer %}
-                <div style="position: fixed; top: 77px; right: 50px;">
-                    <div id="dealer-cards-info">
-                        <p style="color: white;">Карты дилера</p>
-                        <div id="dealer-cards" class="d-flex flex-row mb-4" style="gap: 10px;">
-                            {% for card in cards_dealer %}
-                                <img src="{{ card.image }}" alt="{{ card.value }} of {{ card.suit }}" style="max-width: 150px;">
-                            {% endfor %}
-                        </div>
-                        <div id="dealer-points" class="mb-4">
-                            {% if points_dealer is defined %}
-                                <p style="color: white;">Очки дилера: {{ points_dealer }}</p>
+                <!-- Карты Дилера -->
+                {% if dealer_acted %}
+                    <div class="col-md-6 mb-4">
+                        <h4>Карты дилера:</h4>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% if cards_dealer %}
+                                {% for card in cards_dealer %}
+                                    <img src="{{ card.image }}" alt="{{ card.value }} of {{ card.suit }}" class="img-fluid" style="max-width: 100px;">
+                                {% endfor %}
+                            {% else %}
+                                <p>Дилер не имеет карт.</p>
                             {% endif %}
                         </div>
+                        {% if points_dealer is defined %}
+                            <p class="mt-2">Очки дилера: {{ points_dealer }}</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            </div>
+
+
+            <!-- Кнопки Управления Игрой -->
+            <div class="row justify-content-center mt-5 mb-4">
+                <div class="col-md-8 d-flex justify-content-center flex-wrap gap-3">
+                    {% if not dealer_acted and not result %}
+                        <form action="{{ url_for('draw_card') }}" method="post">
+                            <button type="submit" class="btn btn-primary rounded-pill px-4">Вытянуть карту</button>
+                        </form>
+                        <form action="{{ url_for('dealer') }}" method="get">
+                            <button type="submit" class="btn btn-secondary rounded-pill px-4">Передать ход</button>
+                        </form>
+                    {% endif %}
+                    <a href="{{ url_for('final_page') }}" class="btn btn-warning rounded-pill px-4">Закончить игру</a>
+                    <button onclick="window.location.href='{{ url_for('reset_game') }}'" class="btn btn-danger rounded-pill px-4" type="button">Сыграть еще раз</button>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Результат Игры -->
+        {% if result %}
+            <div class="row">
+                <div class="col">
+                    <div class="alert 
+                        {% if result == 'win' %}
+                            alert-success
+                        {% elif result == 'loss' %}
+                            alert-danger
+                        {% elif result == 'draw' %}
+                            alert-warning
+                        {% endif %}" 
+                        role="alert">
+                        {% if result == 'win' %}
+                            Поздравляем! Вы выиграли ${{ current_bet * 2 }}!
+                        {% elif result == 'loss' %}
+                            К сожалению, вы проиграли ${{ current_bet }}.
+                        {% elif result == 'draw' %}
+                            Ничья! Ваша ставка ${{ current_bet }} возвращена.
+                        {% endif %}
                     </div>
                 </div>
-            {% endif %}
-
-            <form action="{{ url_for('draw_card') }}" method="post" style="margin-bottom: 20px;">
-                <button type="submit" class="btn btn-danger rounded-pill px-3">Вытянуть еще одну карту</button>
-            </form>
-
-            <form action="{{ url_for('dealer') }}" method="get" style="margin-bottom: 20px;"> 
-                <button type="submit" class="btn btn-danger rounded-pill px-3">Передать ход</button>
-            </form>
-
-            <a href="{{ url_for('final_page') }}" class="btn btn-warning rounded-pill px-3" style="background-color: #ffc107; color: black; margin-right: 10px;">Закончить игру</a>
-
-            <button onclick="window.location.href='{{ url_for('reset_game') }}'" class="btn btn-danger rounded-pill px-3" type="button">Сыграть еще раз</button>
+            </div>
         {% endif %}
-    </div>  
 
-    {% if result %}
-        <div class="position-fixed bottom-0 start-50 translate-middle-x mb-4" style="width: 100%;">
-            {% if result == 'win' %}
-                <div class="alert alert-success" role="alert">
-                    Поздравляем! Вы выиграли ${{ current_bet * 2 }}!
-                </div>
-            {% elif result == 'loss' %}
-                <div class="alert alert-danger" role="alert">
-                    К сожалению, вы проиграли ${{ current_bet }}.
-                </div>
-            {% elif result == 'draw' %}
-                <div class="alert alert-warning" role="alert">
-                    Ничья! Ваша ставка ${{ current_bet }} возвращена.
-                </div>
-            {% endif %}
-        </div>
-    {% endif %}
-</body>
+    </div>
+
+   
+
+</div>
 {% endblock %}
